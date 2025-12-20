@@ -1,0 +1,11 @@
+:root {
+  --brand-primary: #000000;
+  --brand-secondary: #ffffff;
+  --brand-accent: #ff6a00;
+  --text-colour: #111111;
+  --muted-text-colour: #444444;
+  --background-colour: #ffffff;
+  --surface-colour: #f6f6f6;
+  --border-colour: #e6e6e6;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}

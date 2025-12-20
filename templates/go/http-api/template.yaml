@@ -1,0 +1,11 @@
+id: go-http-api
+name: Go HTTP API
+language: go
+framework: net-http
+description: Minimal Go HTTP API with Helm deployment
+use_cases:
+  - api
+default_port: 8080
+health_path: /health
+helm_chart_path: helm
+argocd_app_path: argocd/apps.yaml

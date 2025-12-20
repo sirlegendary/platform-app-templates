@@ -1,0 +1,47 @@
+version: 1
+templates:
+  - id: python-flask-landing
+    name: Python Flask Landing
+    language: python
+    framework: flask
+    use_cases:
+      - landing-page
+    path: templates/python/flask-landing
+    default_port: 8080
+    health_path: /
+    helm_chart_path: helm
+    argocd_app_path: argocd/apps.yaml
+  - id: python-fastapi-api
+    name: Python FastAPI API
+    language: python
+    framework: fastapi
+    use_cases:
+      - api
+    path: templates/python/fastapi-api
+    default_port: 8080
+    health_path: /health
+    helm_chart_path: helm
+    argocd_app_path: argocd/apps.yaml
+  - id: react-spa
+    name: React Single Page App
+    language: javascript
+    framework: react
+    use_cases:
+      - single-page-app
+      - landing-page
+    path: templates/react/spa
+    default_port: 8080
+    health_path: /
+    helm_chart_path: helm
+    argocd_app_path: argocd/apps.yaml
+  - id: go-http-api
+    name: Go HTTP API
+    language: go
+    framework: net-http
+    use_cases:
+      - api
+    path: templates/go/http-api
+    default_port: 8080
+    health_path: /health
+    helm_chart_path: helm
+    argocd_app_path: argocd/apps.yaml

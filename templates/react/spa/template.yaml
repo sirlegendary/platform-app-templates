@@ -1,0 +1,12 @@
+id: react-spa
+name: React Single Page App
+language: javascript
+framework: react
+description: Minimal React SPA (Vite) with Helm deployment
+use_cases:
+  - single-page-app
+  - landing-page
+default_port: 8080
+health_path: /
+helm_chart_path: helm
+argocd_app_path: argocd/apps.yaml

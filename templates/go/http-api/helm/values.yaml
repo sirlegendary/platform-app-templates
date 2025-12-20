@@ -1,0 +1,15 @@
+image:
+  repository: __IMAGE_REPO__
+  tag: __IMAGE_TAG__
+  pullPolicy: IfNotPresent
+
+service:
+  port: 8080
+
+ingress:
+  enabled: true
+  className: ""
+  host: __INGRESS_HOST__
+  path: /
+
+resources: {}
