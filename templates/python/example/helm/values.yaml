@@ -3,12 +3,12 @@
 replicaCount: 1
 
 image:
-  repository: __IMAGE_REPO__
+  repository: ghcr.io/sirlegendary/__APP_NAME__
   pullPolicy: IfNotPresent
   tag: "latest"
 
 imagePullSecrets:
-  - name: github-pull-secret
+  - name: github-pull-secret # Do not change this
   
 service:
   type: ClusterIP
