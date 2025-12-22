@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app-__APP_NAME__
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: "https://gitea.globallogic.local/sirlegendary/__APP_NAME__.git"
+    targetRevision: main
+    path: helm
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app-__APP_NAME__
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

@@ -1,0 +1,13 @@
+apiVersion: v2
+name: __APP_NAME__
+description: __APP_NAME__ Helm chart
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - python
+  - flask
+  - demo
+maintainers:
+  - name: k8s-local-platform
+

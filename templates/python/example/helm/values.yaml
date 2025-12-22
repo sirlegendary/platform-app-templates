@@ -1,0 +1,49 @@
+# Domain: globallogic.local
+
+replicaCount: 1
+
+image:
+  repository: __IMAGE_REPO__
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets:
+  - name: github-pull-secret
+  
+service:
+  type: ClusterIP
+  port: 8000
+  targetPort: 8000
+
+ingressRoute:
+  enabled: true
+  host: __APP_NAME__.globallogic.local
+  entryPoints:
+    - web
+    - websecure
+  # Apply HTTP to HTTPS redirect middleware
+  # Note: Middleware must be in same namespace as IngressRoute
+  middlewares:
+    - name: https-redirect
+      namespace: __APP_NAME__
+  tls:
+    enabled: true
+    secretName: __APP_NAME__-globallogic-local-tls
+    clusterIssuer: globallogic-local-ca-issuer  # Creates Certificate resource
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+# Health check configuration
+healthcheck:
+  enabled: false
+
+# Environment-specific labels
+commonLabels:
+  environment: work
+  cluster: k8s-local-platform

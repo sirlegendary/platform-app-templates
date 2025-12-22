@@ -1,0 +1,16 @@
+{{- if .Values.ingressRoute.enabled -}}
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: https-redirect
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+{{- end }}

@@ -1,11 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
+
 :root {
-  --brand-primary: #000000;
-  --brand-secondary: #ffffff;
-  --brand-accent: #ff6a00;
-  --text-colour: #111111;
-  --muted-text-colour: #444444;
-  --background-colour: #ffffff;
-  --surface-colour: #f6f6f6;
-  --border-colour: #e6e6e6;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  /* --- FOUNDATION TOKENS (Official May 2024 Palette) --- */
+  /* */
+  --gl-color-impact-orange: #FF5F2D;
+  --gl-color-light-orange: #FFCEB9;
+  --gl-color-deep-orange: #CF3708;
+  
+  --gl-color-impact-blue: #4442E3;
+  --gl-color-light-blue: #D5D4FF;
+  --gl-color-deep-blue: #00018B;
+
+  --gl-color-white: #FFFFFF;
+  --gl-color-light-steel: #F2F3F6;
+  --gl-color-steel-gray-25: #C8CAD3;
+  --gl-color-steel-gray-50: #858A9B;
+  --gl-color-steel-gray-75: #484F6B;
+  --gl-color-steel-gray-100: #181A24;
+
+  /* --- SEMANTIC TOKENS (Use these in your components) --- */
+  --brand-primary: var(--gl-color-impact-orange);
+  --brand-secondary: var(--gl-color-impact-blue);
+  
+  --text-primary: var(--gl-color-steel-gray-100);
+  --text-muted: var(--gl-color-steel-gray-75);
+  --text-on-orange: var(--gl-color-white); /* Required for accessibility */
+  
+  --bg-main: var(--gl-color-white);
+  --bg-alt: var(--gl-color-light-steel);
+  --border-subtle: var(--gl-color-steel-gray-25);
+
+  /* --- TYPOGRAPHY --- */
+  /* */
+  --font-family-base: "Manrope", Arial, sans-serif;
+  --font-weight-regular: 400;  /* Body copy */
+  --font-weight-medium: 500;   /* Subheadings */
+  --font-weight-semibold: 600; /* Headlines */
+  --font-weight-bold: 700;     /* Section titles */
+
+  /* --- LAYOUT & GRID (Proportional System) --- */
+  /* */
+  --grid-margin: 5%; /* Standard margin (5-8% of shortest side) */
+  --grid-gutter: 2.5%; /* Half of margin */
 }

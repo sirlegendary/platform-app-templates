@@ -1,0 +1,22 @@
+{{- if and .Values.ingressRoute.enabled .Values.ingressRoute.tls.enabled .Values.ingressRoute.tls.clusterIssuer -}}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Release.Name }}-tls
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  secretName: {{ .Values.ingressRoute.tls.secretName }}
+  issuerRef:
+    name: {{ .Values.ingressRoute.tls.clusterIssuer }}
+    kind: ClusterIssuer
+    group: cert-manager.io
+  dnsNames:
+    - {{ .Values.ingressRoute.host }}
+  duration: 1080h      # 45 days
+  renewBefore: 360h    # 15 days (renew at 30 days remaining)
+{{- end }}

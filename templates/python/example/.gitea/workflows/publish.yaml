@@ -1,0 +1,132 @@
+name: Publish Argo app to GitHub GitOps repo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync-argo-app:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/sirlegendary/gitea-custom-runner:latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout application repo
+        uses: actions/checkout@v4
+
+      - name: Set app variables
+        id: vars
+        run: |
+          set -euo pipefail
+
+          # Derive repo name from current directory (assumes checkout at repo root)
+          REPO_NAME="$(basename "$(pwd)")"
+
+          # There should be exactly one app file in argo
+          APP_DIR="argocd"
+          if [ ! -d "$APP_DIR" ]; then
+            echo "❌ Argo app directory not found: $APP_DIR"
+            exit 1
+          fi
+
+          # Find the single file (supports .yaml or .yml)
+          APP_FILE="$(find "$APP_DIR" -maxdepth 1 -type f \( -name '*.yaml' -o -name '*.yml' \) | head -n 1)"
+
+          if [ -z "$APP_FILE" ]; then
+            echo "❌ No Argo app file found in $APP_DIR"
+            exit 1
+          fi
+
+          # Strip directory to just the filename
+          APP_FILE_NAME="$(basename "$APP_FILE")"
+
+          echo "Repo name: $REPO_NAME"
+          echo "Argo app file: $APP_FILE_NAME"
+
+          echo "repo_name=${REPO_NAME}" >> "$GITHUB_OUTPUT"
+          echo "app_file=${APP_FILE_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Clone GitOps repo from GitHub
+        env:
+          GH_USER: ${{ secrets.GH_USER }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          set -euo pipefail
+          GITOPS_REPO="sirlegendary/k8s-local-platform"
+
+          git clone "https://${GH_USER}:${GH_PAT}@github.com/${GITOPS_REPO}.git" gitops
+          echo "Cloned GitOps repo ${GITOPS_REPO}"
+
+      # 4. Sync the Argo app file: copy if missing, or update if changed
+      - name: Sync Argo app definition
+        id: sync
+        run: |
+          set -euo pipefail
+
+          APP_FILE="${{ steps.vars.outputs.app_file }}"
+
+          # Source (in this app repo)
+          SRC_FILE="argocd/${APP_FILE}"
+
+          # Destination (in GitOps repo)
+          DEST_FILE="gitops/argo/work/apps/${APP_FILE}"
+
+          if [ ! -f "$SRC_FILE" ]; then
+            echo "❌ Source Argo app file not found: $SRC_FILE"
+            exit 1
+          fi
+
+          mkdir -p "$(dirname "$DEST_FILE")"
+
+          if [ ! -f "$DEST_FILE" ]; then
+            echo "App file does not exist in GitOps repo, copying new file..."
+            cp "$SRC_FILE" "$DEST_FILE"
+            ls -ltr gitops/argo/work/apps/
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "App file exists in GitOps repo, checking for differences..."
+            if ! diff -q "$SRC_FILE" "$DEST_FILE" > /dev/null 2>&1; then
+              echo "Differences detected, updating GitOps app file..."
+              cp "$SRC_FILE" "$DEST_FILE"
+              ls -ltr gitops/argo/work/apps/
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "No differences found; nothing to update."
+              echo "changed=false" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+      # 5. Commit and push changes to GitHub GitOps repo (only if changed)
+      - name: Commit and push GitOps changes
+        if: steps.sync.outputs.changed == 'true'
+        env:
+          GH_USER: ${{ secrets.GH_USER }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          set -euo pipefail
+
+          cd gitops
+
+          git config user.name "${GH_USER}"
+          git config user.email "${GH_USER}@users.noreply.github.com"
+
+          git status
+          git add argo/work/apps
+
+          # No-op if nothing staged
+          if git diff --cached --quiet; then
+            echo "No staged changes to commit."
+            exit 0
+          fi
+
+          COMMIT_MSG="chore: sync Argo app for ${{ steps.vars.outputs.repo_name }}"
+          git commit -m "${COMMIT_MSG}"
+
+          # Remote already includes credentials from clone
+          git push
+
+          echo "### GitOps repo updated and pushed to GitHub."

@@ -1,0 +1,54 @@
+{{- if .Values.ingressRoute.enabled -}}
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Release.Name }}-http
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`{{ .Values.ingressRoute.host }}`)
+      kind: Rule
+      middlewares:
+        - name: https-redirect
+          namespace: {{ .Release.Namespace }}
+      services:
+        - name: {{ .Release.Name }}
+          port: {{ .Values.service.port }}
+---
+# HTTPS IngressRoute
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`{{ .Values.ingressRoute.host }}`)
+      kind: Rule
+      services:
+        - name: {{ .Release.Name }}
+          port: {{ .Values.service.port }}
+  {{- if .Values.ingressRoute.tls.enabled }}
+  tls:
+    {{- if .Values.ingressRoute.tls.secretName }}
+    secretName: {{ .Values.ingressRoute.tls.secretName }}
+    {{- end }}
+    {{- if .Values.ingressRoute.tls.certResolver }}
+    certResolver: {{ .Values.ingressRoute.tls.certResolver }}
+    {{- end }}
+  {{- end }}
+{{- end }}
