@@ -24,5 +24,5 @@ COPY app ./app
 RUN pip install --upgrade pip && pip install .
 
 EXPOSE 8000
-ENV FLASK_APP=app.main
-CMD ["gunicorn", "app.main:app", "--bind", "0.0.0.0:8000"]
+ENV FLASK_APP=app.app
+CMD ["gunicorn", "app.app:app", "--bind", "0.0.0.0:8000"]
