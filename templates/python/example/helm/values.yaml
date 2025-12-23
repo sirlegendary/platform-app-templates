@@ -1,4 +1,5 @@
 # Domain: globallogic.local
+# ONLY CHANGE __APP_NAME__ to the application name
 
 replicaCount: 1
 
