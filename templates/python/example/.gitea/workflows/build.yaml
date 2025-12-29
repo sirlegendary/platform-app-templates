@@ -13,8 +13,8 @@ jobs:
     container:
       image: ghcr.io/sirlegendary/gitea-custom-runner:latest
     env:
-      REGISTRY_HOST: ghcr.io # Do not change this
-      IMAGE_NAME: sirlegendary/__APP_NAME__
+      REGISTRY_HOST: harbor.globallogic.local # Do not change this
+      IMAGE_NAME: local/__APP_NAME__
     steps:
       - name: Checkout
         uses: actions/checkout@v4
